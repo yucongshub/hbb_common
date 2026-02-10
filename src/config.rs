@@ -106,13 +106,13 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rs-ny.rustdesk.com"];
-pub const RS_PUB_KEY: &str = "OeVuKk5nlHiXp+APNn0Y3pC1Iwpwn44JGqrQCsWqmBw=";
+pub const RENDEZVOUS_SERVERS: &[&str] = &["scdesk.succez.com"];
+pub const RS_PUB_KEY: &str = "MUGpFstr3XGdryYqJsa2M1MWwRLNvjsOgSgmFmw4aKQ=";
 
-pub const RENDEZVOUS_PORT: i32 = 21116;
-pub const RELAY_PORT: i32 = 21117;
-pub const WS_RENDEZVOUS_PORT: i32 = 21118;
-pub const WS_RELAY_PORT: i32 = 21119;
+pub const RENDEZVOUS_PORT: i32 = 22116;
+pub const RELAY_PORT: i32 = 22117;
+pub const WS_RENDEZVOUS_PORT: i32 = 22118;
+pub const WS_RELAY_PORT: i32 = 22119;
 
 macro_rules! serde_field_string {
     ($default_func:ident, $de_func:ident, $default_expr:expr) => {
@@ -1810,7 +1810,29 @@ pub struct LocalConfig {
 
 impl LocalConfig {
     fn load() -> LocalConfig {
-        Config::load_::<LocalConfig>("_local")
+        // Config::load_::<LocalConfig>("_local")
+        let mut config = Config::load_::<LocalConfig>("_local");
+        let mut store = false;
+            if !config.options.contains_key("enable-lan-discovery") {
+                config.options.insert("enable-lan-discovery".to_string(), "N".to_string());
+                store = true;
+            }
+            if !config.options.contains_key("enable-ipv6-punch") {
+                config.options.insert("enable-ipv6-punch".to_string(), "Y".to_string());
+                store = true;
+            }
+            if !config.options.contains_key("enable-check-update") {
+                config.options.insert("enable-check-update".to_string(), "N".to_string());
+                store = true;
+            }
+            if !config.options.contains_key("enable-udp-punch") {
+                config.options.insert("enable-udp-punch".to_string(), "Y".to_string());
+                store = true;
+            }
+        if store {
+                config.store();
+            }
+        config
     }
 
     fn store(&self) {
